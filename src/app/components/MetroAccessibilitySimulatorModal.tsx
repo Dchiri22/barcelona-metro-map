@@ -1,13 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { X, Volume2, VolumeX, Play, RotateCcw } from "lucide-react";
 import type { LineTarget } from "@/app/data/zonaUniversitaria";
-
-const C = {
-  accent: "#5B4FCF",
-  ink: "#1A1832",
-  bg: "#F4F3FF",
-  shadow: "0 8px 32px rgba(26,24,50,0.12)",
-};
+import { APP_THEME as C } from "@/app/theme/solmove";
 
 type Props = {
   open: boolean;
@@ -113,7 +107,7 @@ function SimulatorCanvas({ onClose }: { onClose: () => void }) {
               background: line === l ? (l === "L3" ? "#3FAB2E" : "#F58220") : "white",
               color: line === l ? "white" : C.ink,
               boxShadow: line === l ? "none" : C.shadow,
-              border: line === l ? "none" : "1px solid rgba(91,79,207,0.12)",
+              border: line === l ? "none" : "1px solid rgba(36,50,63,0.12)",
             }}
           >
             {l === "L3" ? "L3 · Trinitat Nova" : "L9S · Aeroport T1"}

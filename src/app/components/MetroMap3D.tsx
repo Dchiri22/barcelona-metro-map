@@ -16,6 +16,7 @@ import {
 } from "@/app/data/barcelonaCity";
 import { parseSvgPath, pathToCurve, schematicTo3D } from "@/app/utils/schematic3d";
 import { getAsphaltMaterial, getBoulevardMaterial, getCrosswalkTexture, getSidewalkMaterial } from "@/app/utils/roadTextures";
+import { SOLMOVE } from "@/app/theme/solmove";
 
 /** Metro tunnel depth below street level (3D mode) */
 const METRO_DEPTH = -0.14;
@@ -459,7 +460,7 @@ function MetroStationNode({
         >
           <circleGeometry args={[rf, 20]} />
           <meshBasicMaterial
-            color={station?.status === "down" ? "#0F0D1A" : "#FFFFFF"}
+            color={station?.status === "down" ? SOLMOVE.ink : "#FFFFFF"}
             transparent
             opacity={dimmed ? 0.15 : fade ? 0.35 : 1}
           />
@@ -508,17 +509,17 @@ function MetroStationNode({
       {isInteractive && !dimmed && (hovered || selected) && station && (
         <Html distanceFactor={8} position={[0, r + 0.32, 0]} center style={{ pointerEvents: "none" }}>
           <div className="rounded-2xl px-3 py-2 shadow-lg border whitespace-nowrap"
-            style={{ background: "white", borderColor: "rgba(91,79,207,0.18)", minWidth: 170, fontFamily: "'Onest', sans-serif" }}>
-            <p className="text-xs font-extrabold" style={{ color: "#0F0D1A" }}>{station.name}</p>
+            style={{ background: "white", borderColor: "rgba(47,163,160,0.18)", minWidth: 170, fontFamily: "'Onest', sans-serif" }}>
+            <p className="text-xs font-extrabold" style={{ color: SOLMOVE.ink }}>{station.name}</p>
             <div className="flex gap-1 mt-1 flex-wrap">
               {station.lines.map(l => (
                 <span key={l} className="text-[8px] font-bold text-white px-1.5 py-0.5 rounded-full" style={{ background: LINE_COLOR[l] }}>{l}</span>
               ))}
             </div>
             <p className="text-[10px] mt-1 font-semibold" style={{ color: ringColor }}>{STATUS_LABEL[station.status]}</p>
-            <p className="text-[9px] mt-0.5" style={{ color: "#7C7A8E" }}>{station.exits} exits · Updated {station.updated}</p>
+            <p className="text-[9px] mt-0.5" style={{ color: SOLMOVE.muted }}>{station.exits} exits · Updated {station.updated}</p>
             {selected && station.elevators.map(e => (
-              <p key={e.id} className="text-[8px] mt-0.5" style={{ color: "#7C7A8E" }}>
+              <p key={e.id} className="text-[8px] mt-0.5" style={{ color: SOLMOVE.muted }}>
                 <span style={{ color: STATUS_COLOR[e.status] }}>●</span> {e.label}
               </p>
             ))}
@@ -589,7 +590,7 @@ function CityLighting({ is2d }: { is2d: boolean }) {
   // Ported from frontend/GlobeCanvas.tsx — cinematic multi-light rig
   return (
     <>
-      <Environment preset="city" environmentIntensity={0.55} />
+      <Environment preset="city" />
       <hemisphereLight args={["#e8f2ff", "#9aab8a", 0.85]} />
       <ambientLight intensity={0.38} color="#f2f7ff" />
       <directionalLight

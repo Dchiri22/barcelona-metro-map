@@ -123,10 +123,10 @@ export const METRO_LINE_LABELS: Record<string, string> = {
 };
 
 export const STATUS_COLOR: Record<ElevStatus, string> = {
-  ok: "#5B4FCF",
-  maint: "#A78BFA",
-  down: "#0F0D1A",
-  none: "#C4C0D4",
+  ok: "#2FA3A0",
+  maint: "#F5B12E",
+  down: "#24323F",
+  none: "#9CA3AF",
 };
 
 export const STATUS_LABEL: Record<ElevStatus, string> = {

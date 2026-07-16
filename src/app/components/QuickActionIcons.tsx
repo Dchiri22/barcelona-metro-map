@@ -1,6 +1,6 @@
 /** Purple line icons for Home → Quick actions (match reference design) */
 
-const stroke = "#5B4FCF";
+const stroke = "#2FA3A0";
 
 export function IconElevator({ size = 22 }: { size?: number }) {
   return (

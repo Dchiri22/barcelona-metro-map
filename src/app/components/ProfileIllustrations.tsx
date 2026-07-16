@@ -1,6 +1,6 @@
 /** Profile step illustrations — purple line art (Step 1 of 2) */
 
-const S = "#5B4FCF";
+const S = "#2FA3A0";
 const W = 2;
 const cap = "round" as const;
 const join = "round" as const;

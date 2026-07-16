@@ -3,15 +3,17 @@ import { motion } from "motion/react";
 import heroImg from "@/imports/image-8.png";
 import trainImg from "@/imports/image-12.png";
 import routesImg from "@/imports/wemove-routes-bg.png";
-import logoIcon from "@/imports/3f68a747-fc46-455a-b0d1-e31f98d50180.png";
-import profileWheelchair from "@/imports/icons/profile-wheelchair.png";
-import profileCrutches from "@/imports/icons/profile-crutches.png";
-import profilePram from "@/imports/icons/profile-pram.png";
-import profileVisual from "@/imports/icons/profile-visual.png";
-import quickElevator from "@/imports/icons/quick-elevator.png";
-import quickReport from "@/imports/icons/quick-report.png";
-import quickRoute from "@/imports/icons/quick-route.png";
-import quickSaved from "@/imports/icons/quick-saved.png";
+import solmoveLogo from "@/imports/icons/solmove-logo-white.png";
+import { SolMoveLogo } from "@/app/components/SolMoveLogo";
+import {
+  IconProfileWheelchair,
+  IconProfileCrutches,
+  IconProfilePram,
+  IconProfileVisual,
+} from "@/app/components/ProfileIllustrations";
+import {
+  IconElevator, IconReport, IconRoute, IconSaved,
+} from "@/app/components/QuickActionIcons";
 import {
   Navigation, Bell, ArrowLeft, CheckCircle, Clock, XCircle,
   Mic, ArrowRight, LocateFixed, Accessibility, RefreshCw,
@@ -31,20 +33,7 @@ import {
   type Station, type ElevStatus, type LineId,
 } from "@/app/data/metro";
 
-// ─── Theme ────────────────────────────────────────────────────────────────────
-
-const C = {
-  bg:      "#F4F3FF",   // lavender tint background
-  white:   "#ffffff",
-  ink:     "#0F0D1A",   // near-black text
-  accent:  "#5B4FCF",   // violet primary
-  muted:   "#7C7A8E",   // secondary text
-  border:  "rgba(91,79,207,0.18)",
-  shadow:  "0 4px 24px rgba(91,79,207,0.10)",
-  shadowSm:"0 2px 12px rgba(91,79,207,0.08)",
-  display: "'Bricolage Grotesque', sans-serif",
-  body:    "'Onest', sans-serif",
-};
+import { APP_THEME as C, SOLMOVE } from "@/app/theme/solmove";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,9 +45,9 @@ type Screen =
 // ─── Status config ────────────────────────────────────────────────────────────
 
 const STATUS: Record<ElevStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  ok:    { label: "Working",          color: "#5B4FCF", icon: <CheckCircle size={13} strokeWidth={2.5} /> },
-  maint: { label: "Maintenance",      color: "#A78BFA", icon: <Clock size={13} strokeWidth={2.5} /> },
-  down:  { label: "Out of service",   color: "#0F0D1A", icon: <XCircle size={13} strokeWidth={2.5} /> },
+  ok:    { label: "Working",          color: SOLMOVE.path, icon: <CheckCircle size={13} strokeWidth={2.5} /> },
+  maint: { label: "Maintenance",      color: SOLMOVE.sun,  icon: <Clock size={13} strokeWidth={2.5} /> },
+  down:  { label: "Out of service",   color: SOLMOVE.ink,  icon: <XCircle size={13} strokeWidth={2.5} /> },
   none:  { label: "No elevator",      color: "#9CA3AF", icon: <Accessibility size={13} /> },
 };
 
@@ -93,11 +82,9 @@ function Btn({ children, onClick, disabled, full, accent = C.accent, sm }:
   );
 }
 
-// Logo pill — matches image-16 reference
+// Logo — SolMove wordmark (white, no background)
 function Logo() {
-  return (
-    <img src={logoIcon} alt="AccésBCN" decoding="async" style={{ width: 90, height: 90, objectFit: "contain" }} />
-  );
+  return <SolMoveLogo height={32} />;
 }
 
 // Card container
@@ -133,7 +120,7 @@ function Nav({ screen, go }: { screen: Screen; go: (s: Screen) => void }) {
           return (
             <button key={item.id} onClick={() => go(item.id)}
               className={`flex-1 flex flex-col items-center gap-0.5 py-3 text-[10px] font-bold transition-all rounded-2xl ${on ? "" : ""}`}
-              style={{ color: on ? C.accent : "#C4C0D4", background: "transparent" }}>
+              style={{ color: on ? C.accent : SOLMOVE.muted, background: "transparent" }}>
               {item.icon}
               {item.label}
             </button>
@@ -149,10 +136,17 @@ function Nav({ screen, go }: { screen: Screen; go: (s: Screen) => void }) {
 function OB1({ next }: { next: () => void }) {
   const [expanded, setExpanded] = useState(true);
 
+  // Auto swipe-up after 4s if the user doesn't drag
+  useEffect(() => {
+    if (!expanded) return;
+    const t = window.setTimeout(() => setExpanded(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [expanded]);
+
   return (
     <div className="flex flex-col h-full overflow-hidden" style={{ background: C.bg }}>
 
-      {/* Photo hero — starts full-screen, swipe up to collapse */}
+      {/* Photo hero — starts full-screen, swipe up to collapse (or auto after 4s) */}
       <motion.div
         className="relative shrink-0"
         initial={{ height: "100%" }}
@@ -174,9 +168,8 @@ function OB1({ next }: { next: () => void }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <img src={logoIcon} alt="MouBCN" decoding="async" style={{ width: 180, height: 180, objectFit: "contain", marginBottom: -40 }} />
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-4xl font-extrabold text-white" style={{ fontFamily: C.display }}>MouBCN</p>
+            <SolMoveLogo height={88} />
+            <div className="flex flex-col items-center gap-1 mt-3">
               <p className="text-sm font-semibold text-white" style={{ opacity: 0.85 }}>Accessible Barcelona Metro</p>
               <p className="text-xs text-white" style={{ opacity: 0.65 }}>Move easily, safely, and without barriers.</p>
             </div>
@@ -252,10 +245,10 @@ function OB1({ next }: { next: () => void }) {
 function OB2({ next, back }: { next: () => void; back: () => void }) {
   const [sel, setSel] = useState<string | null>(null);
   const profiles = [
-    { id: "wheelchair", label: "Wheelchair",       img: profileWheelchair },
-    { id: "crutches",   label: "Crutches / cane", img: profileCrutches },
-    { id: "pram",       label: "Pram / pushchair", img: profilePram },
-    { id: "visual",     label: "Visual impairment", img: profileVisual },
+    { id: "wheelchair", label: "Wheelchair",        Icon: IconProfileWheelchair },
+    { id: "crutches",   label: "Crutches / cane",   Icon: IconProfileCrutches },
+    { id: "pram",       label: "Pram / pushchair",  Icon: IconProfilePram },
+    { id: "visual",     label: "Visual impairment", Icon: IconProfileVisual },
   ];
 
   return (
@@ -274,33 +267,24 @@ function OB2({ next, back }: { next: () => void; back: () => void }) {
           const on = sel === p.id;
           return (
             <button key={p.id} onClick={() => setSel(p.id)}
-              className="relative flex flex-col items-center justify-center gap-3 py-8 rounded-3xl bg-white transition-all"
+              className="relative flex flex-col items-center justify-center gap-3 py-8 px-3 rounded-3xl bg-white transition-all"
               style={{
-                border: `2px solid ${on ? C.accent : "rgba(91,79,207,0.12)"}`,
+                border: `2px solid ${on ? C.accent : "rgba(36,50,63,0.12)"}`,
                 boxShadow: on ? C.shadow : C.shadowSm,
-                color: C.accent,
               }}
               aria-pressed={on}>
-              {/* Radio button top-right */}
               <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
                 style={{
-                  border: `2px solid ${on ? C.accent : "#D1CEEA"}`,
+                  border: `2px solid ${on ? C.accent : SOLMOVE.gray}`,
                   background: on ? C.accent : "transparent",
                 }}>
                 {on && <div className="w-2 h-2 rounded-full bg-white" />}
               </div>
 
-              {/* Illustration */}
-              <img
-                src={p.img}
-                alt=""
-                aria-hidden
-                width={56}
-                height={56}
-                style={{ width: 56, height: 56, objectFit: "contain" }}
-              />
+              <span className="flex items-center justify-center w-14 h-14">
+                <p.Icon size={56} />
+              </span>
 
-              {/* Label */}
               <span className="text-xs font-bold text-center leading-tight"
                 style={{ color: C.ink }}>{p.label}</span>
             </button>
@@ -335,12 +319,23 @@ function OB3({ finish, back }: { finish: () => void; back: () => void }) {
           const on = pinned.includes(s.id);
           return (
             <button key={s.id} onClick={() => toggle(s.id)}
-              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white text-left transition-all"
-              style={{ boxShadow: on ? `0 0 0 2px ${C.accent}, ${C.shadowSm}` : C.shadowSm }}
+              className="w-full flex flex-col gap-2.5 px-4 py-4 rounded-2xl bg-white text-left transition-all box-border"
+              style={{
+                border: `2px solid ${on ? C.accent : "transparent"}`,
+                boxShadow: C.shadowSm,
+              }}
               aria-pressed={on}>
-              <div className="flex gap-1 shrink-0">{s.lines.map((l) => <LineBadge key={l} line={l} sm />)}</div>
-              <p className="flex-1 text-sm font-semibold truncate" style={{ color: C.ink }}>{s.name}</p>
-              <StatusPill status={s.status} />
+              <div className="flex items-center justify-between gap-3 w-full min-w-0">
+                <p className="min-w-0 flex-1 text-sm font-semibold truncate leading-snug" style={{ color: C.ink }}>
+                  {s.name}
+                </p>
+                <span className="shrink-0">
+                  <StatusPill status={s.status} />
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {s.lines.map((l) => <LineBadge key={l} line={l} sm />)}
+              </div>
             </button>
           );
         })}
@@ -373,12 +368,10 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
         <div className="absolute inset-0"
           style={{ background: "linear-gradient(160deg, rgba(15,13,26,0.52) 0%, rgba(15,13,26,0.10) 50%, rgba(15,13,26,0.45) 100%)" }} />
 
-        {/* Status bar row */}
-        <div className="relative flex items-center justify-between px-4 pt-11 pb-0">
-          {/* Logo */}
+        {/* Top bar: logo + actions */}
+        <div className="relative flex items-center justify-between px-4 pt-10 pb-0 gap-3">
           <Logo />
-          {/* Right icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button className="w-9 h-9 rounded-2xl flex items-center justify-center"
               style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)" }}
               aria-label="Accessibility settings">
@@ -395,7 +388,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
         </div>
 
         {/* Hero headline */}
-        <div className="relative px-5 pt-5">
+        <div className="relative px-5 pt-6">
           <h1 className="text-[28px] font-extrabold text-white leading-tight"
             style={{ fontFamily: C.display, textShadow: "0 2px 12px rgba(0,0,0,0.25)" }}>
             Barcelona<br />is for everyone.
@@ -408,12 +401,12 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
 
       {/* ── Route card ───────────────────────────────────────────────────── */}
       <div className="px-4 -mt-4 relative z-10">
-        <div className="bg-white rounded-3xl px-4 pt-4 pb-4" style={{ boxShadow: "0 8px 32px rgba(91,79,207,0.18)" }}>
+        <div className="bg-white rounded-3xl px-4 pt-4 pb-4" style={{ boxShadow: "0 8px 32px rgba(47,163,160,0.18)" }}>
 
           {/* FROM row */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: "#EDE9FF" }}>
+              style={{ background: "rgba(47,163,160,0.12)" }}>
               <LocateFixed size={14} color={C.accent} />
             </div>
             <div className="flex-1 min-w-0">
@@ -421,7 +414,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
               <p className="text-sm font-semibold truncate" style={{ color: C.ink }}>My location</p>
             </div>
             <button className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
-              style={{ border: `1.5px solid rgba(91,79,207,0.2)`, color: C.accent }}>
+              style={{ border: `1.5px solid rgba(47,163,160,0.22)`, color: C.accent }}>
               <Navigation size={13} />
             </button>
           </div>
@@ -429,9 +422,9 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
           {/* Dotted separator */}
           <div className="flex items-center gap-3 my-2">
             <div className="w-8 flex justify-center shrink-0">
-              <div className="w-px h-5" style={{ background: "repeating-linear-gradient(to bottom, #C4BBFF 0, #C4BBFF 3px, transparent 3px, transparent 6px)" }} />
+              <div className="w-px h-5" style={{ background: `repeating-linear-gradient(to bottom, ${SOLMOVE.gray} 0, ${SOLMOVE.gray} 3px, transparent 3px, transparent 6px)` }} />
             </div>
-            <div className="flex-1 h-px" style={{ background: "rgba(91,79,207,0.08)" }} />
+            <div className="flex-1 h-px" style={{ background: "rgba(36,50,63,0.08)" }} />
           </div>
 
           {/* WHERE TO row */}
@@ -442,10 +435,10 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
             </div>
             <button className="flex-1 min-w-0 text-left" onClick={() => go("route-input")}>
               <p className="text-[10px] font-semibold mb-0.5" style={{ color: C.muted }}>Where to?</p>
-              <p className="text-sm font-medium" style={{ color: "#C4C0D4" }}>Search destination…</p>
+              <p className="text-sm font-medium" style={{ color: SOLMOVE.muted, opacity: 0.65 }}>Search destination…</p>
             </button>
             <button className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
-              style={{ border: `1.5px solid rgba(91,79,207,0.2)`, color: C.accent }}>
+              style={{ border: `1.5px solid rgba(47,163,160,0.22)`, color: C.accent }}>
               <Mic size={13} />
             </button>
           </div>
@@ -465,27 +458,22 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
         <p className="text-sm font-bold mb-3" style={{ color: C.ink, fontFamily: C.body }}>Quick actions</p>
         <div className="grid grid-cols-4 gap-2.5">
           {([
-            { label: "Elevator", icon: quickElevator, fn: () => go("alerts") },
-            { label: "Report",   icon: quickReport,   fn: () => go("station-detail") },
-            { label: "Route",    icon: quickRoute,    fn: () => go("route-input") },
-            { label: "Saved",    icon: quickSaved,    fn: () => go("alerts") },
+            { label: "Elevator", Icon: IconElevator, fn: () => go("alerts") },
+            { label: "Report",   Icon: IconReport,   fn: () => go("station-detail") },
+            { label: "Route",    Icon: IconRoute,    fn: () => go("route-input") },
+            { label: "Saved",    Icon: IconSaved,    fn: () => go("alerts") },
           ] as const).map((qa) => (
             <button
               key={qa.label}
               onClick={qa.fn}
-              className="flex flex-col items-center gap-2.5 py-4 px-1 rounded-2xl bg-white transition-transform active:scale-[0.97]"
+              className="flex flex-col items-center justify-center gap-2 min-h-[88px] py-3 px-1 rounded-2xl bg-white transition-transform active:scale-[0.97]"
               style={{ boxShadow: C.shadowSm }}
             >
-              <img
-                src={qa.icon}
-                alt=""
-                aria-hidden
-                width={48}
-                height={48}
-                style={{ width: 48, height: 48, objectFit: "contain" }}
-              />
+              <span className="flex items-center justify-center w-9 h-9 shrink-0">
+                <qa.Icon size={26} />
+              </span>
               <span
-                className="text-[11px] font-semibold text-center leading-none"
+                className="text-[11px] font-semibold text-center leading-tight"
                 style={{ color: C.ink, fontFamily: C.body }}
               >
                 {qa.label}
@@ -531,7 +519,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
               <circle cx="140" cy="26" r="7" fill="white" stroke="#9B2D9E" strokeWidth="2.5" />
               <circle cx="140" cy="50" r="7" fill="white" stroke="#0065A7" strokeWidth="2.5" />
               <line x1="140" y1="33" x2="140" y2="43" stroke="#E0DCFF" strokeWidth="1.5" />
-              <text x="140" y="68" textAnchor="middle" fontSize="7.5" fill="#7C7A8E" fontWeight="600" fontFamily="Onest,sans-serif">Sagrada Família</text>
+              <text x="140" y="68" textAnchor="middle" fontSize="7.5" fill={SOLMOVE.muted} fontWeight="600" fontFamily="Onest,sans-serif">Sagrada Família</text>
               {/* green dot = working */}
               <circle cx="140" cy="26" r="3.5" fill="#22C55E" />
               <circle cx="140" cy="50" r="3.5" fill="#22C55E" />
@@ -549,7 +537,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
           {[sagrada, pggracia].map((s, i) => (
             <div key={s.id}
               className="w-full flex items-center gap-3 px-4 py-3 pointer-events-none"
-              style={{ borderTop: i === 0 ? "1px solid rgba(91,79,207,0.07)" : "1px solid rgba(91,79,207,0.07)" }}>
+              style={{ borderTop: i === 0 ? "1px solid rgba(36,50,63,0.07)" : "1px solid rgba(36,50,63,0.07)" }}>
               <div className="flex gap-1 shrink-0">{s.lines.slice(0, 2).map(l => <LineBadge key={l} line={l} sm />)}</div>
               <span className="flex-1 text-xs font-semibold text-left truncate" style={{ color: C.ink }}>{s.name}</span>
               <StatusPill status={s.status} />
@@ -557,7 +545,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
           ))}
 
           <div className="px-4 py-2.5 flex items-center justify-center gap-1.5 pointer-events-none"
-            style={{ borderTop: "1px solid rgba(91,79,207,0.07)", background: "rgba(91,79,207,0.04)" }}>
+            style={{ borderTop: "1px solid rgba(36,50,63,0.07)", background: "rgba(47,163,160,0.06)" }}>
             <Accessibility size={13} color={C.accent} />
             <span className="text-[10px] font-bold" style={{ color: C.accent }}>
               Toca per simular ruta accessible · Zona Universitària
@@ -584,7 +572,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
               Making Barcelona more<br />accessible every day.
             </p>
             <button className="self-start flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-white"
-              style={{ color: C.ink, border: `1.5px solid rgba(91,79,207,0.18)`, boxShadow: C.shadowSm }}>
+              style={{ color: C.ink, border: `1.5px solid rgba(47,163,160,0.18)`, boxShadow: C.shadowSm }}>
               Learn more <ArrowRight size={13} />
             </button>
           </div>
@@ -620,7 +608,7 @@ function HomeScreen({ go, setSt, onOpenSimulator }: { go: (s: Screen) => void; s
             <button
               type="button"
               className="self-start flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-bold bg-white"
-              style={{ color: C.ink, border: `1.5px solid rgba(91,79,207,0.18)`, boxShadow: C.shadowSm }}>
+              style={{ color: C.ink, border: `1.5px solid rgba(47,163,160,0.18)`, boxShadow: C.shadowSm }}>
               View routes <ArrowRight size={13} />
             </button>
           </div>
@@ -660,7 +648,7 @@ function MapScreen({ go, setSt }: { go: (s: Screen) => void; setSt: (s: Station)
   };
 
   return (
-    <div className="flex flex-col h-full" style={{ background: C.bg }}>
+    <div className="flex flex-col h-full pb-24" style={{ background: C.bg }}>
       <div className="px-6 pt-12 pb-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-extrabold" style={{ color: C.ink, fontFamily: C.display }}>Metro map</h1>
@@ -769,7 +757,7 @@ function MapScreen({ go, setSt }: { go: (s: Screen) => void; setSt: (s: Station)
       {sheet && (
         <div className="absolute inset-0 z-50 flex flex-col justify-end" style={{ background: "rgba(15,13,26,0.25)" }} onClick={() => setSheet(null)}>
           <div className="bg-white rounded-t-[32px] p-6 space-y-4" onClick={e => e.stopPropagation()}>
-            <div className="w-10 h-1 rounded-full mx-auto" style={{ background: "#EDE9FF" }} />
+            <div className="w-10 h-1 rounded-full mx-auto" style={{ background: SOLMOVE.gray }} />
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-xl font-extrabold" style={{ color: C.ink, fontFamily: C.display }}>{sheet.name}</h3>
@@ -811,7 +799,7 @@ function RouteInput({ go }: { go: (s: Screen) => void }) {
               className="flex-1 bg-transparent text-sm font-semibold outline-none placeholder:font-normal" style={{ color: C.ink }} />
             <button aria-label="Voice"><Mic size={16} color={C.muted} /></button>
           </div>
-          <div className="w-px h-3 bg-[#EDE9FF] mx-7" />
+          <div className="w-px h-3 mx-7" style={{ background: SOLMOVE.gray }} />
           <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white" style={{ boxShadow: C.shadowSm, outline: `2px solid ${C.accent}`, outlineOffset: 0 }}>
             <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white" style={{ border: `2px solid ${C.ink}` }}>
               <MapPin size={12} color={C.ink} />
@@ -932,7 +920,7 @@ function RouteResults({ go }: { go: (s: Screen) => void }) {
           <div className="flex items-center gap-3 px-4 py-3.5">
             {r.lines.map((seg, i) => (
               <div key={i} className="flex items-center gap-3">
-                {i > 0 && <div className="w-6 h-0.5" style={{ background: "#EDE9FF" }} />}
+                {i > 0 && <div className="w-6 h-0.5" style={{ background: SOLMOVE.gray }} />}
                 <div className="flex items-center gap-1.5">
                   <LineBadge line={seg.id} sm />
                   <span className="text-[11px] font-semibold" style={{ color: C.muted }}>{seg.stops} stops</span>
@@ -958,7 +946,7 @@ function RouteResults({ go }: { go: (s: Screen) => void }) {
             <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: C.muted }}>Step-by-step</p>
           </div>
           {r.steps.map((step, i) => (
-            <div key={i} className={`flex items-start gap-3 px-4 py-3 ${i < r.steps.length - 1 ? "border-b" : ""}`} style={{ borderColor: "#F4F3FF" }}>
+            <div key={i} className={`flex items-start gap-3 px-4 py-3 ${i < r.steps.length - 1 ? "border-b" : ""}`} style={{ borderColor: SOLMOVE.bg }}>
               <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-white"
                 style={{ border: `1.5px solid ${step.ok ? C.accent : C.ink}` }}>
                 <span className="text-[11px] font-extrabold" style={{ color: step.ok ? C.accent : C.ink }}>{i + 1}</span>
@@ -976,10 +964,10 @@ function RouteResults({ go }: { go: (s: Screen) => void }) {
 
         {/* Backup */}
         <Card>
-          <div className="flex items-start gap-3 px-4 py-4" style={{ borderLeft: `3px solid #A78BFA`, borderRadius: "1.5rem" }}>
-            <Shield size={15} color="#A78BFA" className="shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 px-4 py-4" style={{ borderLeft: `3px solid ${SOLMOVE.sun}`, borderRadius: "1.5rem" }}>
+            <Shield size={15} color={SOLMOVE.sun} className="shrink-0 mt-0.5" />
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#A78BFA" }}>Backup plan</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: SOLMOVE.sun }}>Backup plan</p>
               <p className="text-sm" style={{ color: C.ink }}>{r.backup}</p>
             </div>
           </div>
@@ -1033,7 +1021,7 @@ function StationDetail({ station, go }: { station: Station; go: (s: Screen) => v
             <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: C.muted }}>Elevators</p>
           </div>
           {station.elevators.map((e, i) => (
-            <div key={e.id} className={`flex items-center gap-3 px-4 py-3.5 ${i < station.elevators.length - 1 ? "border-b" : ""}`} style={{ borderColor: "#F4F3FF" }}>
+            <div key={e.id} className={`flex items-center gap-3 px-4 py-3.5 ${i < station.elevators.length - 1 ? "border-b" : ""}`} style={{ borderColor: SOLMOVE.bg }}>
               <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-white shrink-0"
                 style={{ border: `1.5px solid ${STATUS[e.status].color}`, color: STATUS[e.status].color }}>
                 {e.status === "ok" ? <CheckCircle size={14} /> : e.status === "maint" ? <Clock size={14} /> : <XCircle size={14} />}
@@ -1054,11 +1042,11 @@ function StationDetail({ station, go }: { station: Station; go: (s: Screen) => v
             { label: "Mezzanine",    items: ["Ticket barriers", "Customer service"] },
             { label: "Platform L2 / L5", items: ["L2: Badalona / Sant Antoni", "L5: Vall d'Hebron / Cornellà"] },
           ].map((layer, i) => (
-            <div key={i} className={`px-4 py-3 ${i < 2 ? "border-b" : ""}`} style={{ borderColor: "#F4F3FF" }}>
+            <div key={i} className={`px-4 py-3 ${i < 2 ? "border-b" : ""}`} style={{ borderColor: SOLMOVE.bg }}>
               <p className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: C.muted }}>{layer.label}</p>
               {layer.items.map((item) => (
                 <p key={item} className={`text-sm ${item.includes("stairs") ? "line-through" : "font-medium"}`}
-                  style={{ color: item.includes("stairs") ? "#C4C0D4" : C.ink }}>{item}</p>
+                  style={{ color: item.includes("stairs") ? SOLMOVE.muted : C.ink, opacity: item.includes("stairs") ? 0.55 : 1 }}>{item}</p>
               ))}
             </div>
           ))}
@@ -1070,7 +1058,7 @@ function StationDetail({ station, go }: { station: Station; go: (s: Screen) => v
             <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: C.muted }}>Incidents — last 30 days</p>
           </div>
           {[{ date: "8 Jul", h: "4h", elev: "Entrance → Mezzanine" }, { date: "2 Jul", h: "1.5h", elev: "Mezzanine → L5" }].map((inc, i) => (
-            <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i === 0 ? "border-b" : ""}`} style={{ borderColor: "#F4F3FF" }}>
+            <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i === 0 ? "border-b" : ""}`} style={{ borderColor: SOLMOVE.bg }}>
               <span className="text-xs w-10 shrink-0" style={{ color: C.muted }}>{inc.date}</span>
               <span className="flex-1 text-sm font-medium" style={{ color: C.ink }}>{inc.elev}</span>
               <span className="text-xs shrink-0" style={{ color: C.muted }}>{inc.h}</span>
@@ -1087,14 +1075,14 @@ function StationDetail({ station, go }: { station: Station; go: (s: Screen) => v
       {reportOpen && (
         <div className="absolute inset-0 z-50 flex flex-col justify-end" style={{ background: "rgba(15,13,26,0.2)" }} onClick={() => setReportOpen(false)}>
           <div className="bg-white rounded-t-[32px] p-6 space-y-4" onClick={e => e.stopPropagation()}>
-            <div className="w-10 h-1 rounded-full mx-auto" style={{ background: "#EDE9FF" }} />
+            <div className="w-10 h-1 rounded-full mx-auto" style={{ background: SOLMOVE.gray }} />
             {reportStep === 0 && (<>
               <h3 className="text-xl font-extrabold" style={{ color: C.ink }}>What is the problem?</h3>
               <div className="grid grid-cols-2 gap-2.5">
                 {["Elevator broken", "Elevator locked", "Obstacle blocking", "Other issue"].map((issue) => (
                   <button key={issue} onClick={() => { setSelectedIssue(issue); setReportStep(1); }}
                     className="py-4 rounded-2xl text-sm font-semibold bg-white transition-all"
-                    style={{ border: `1.5px solid ${selectedIssue === issue ? C.accent : "#EDE9FF"}`, color: selectedIssue === issue ? C.accent : C.ink }}>
+                    style={{ border: `1.5px solid ${selectedIssue === issue ? C.accent : SOLMOVE.gray}`, color: selectedIssue === issue ? C.accent : C.ink }}>
                     {issue}
                   </button>
                 ))}
@@ -1151,7 +1139,7 @@ function AlertsScreen({ go }: { go: (s: Screen) => void }) {
             <div className="p-4 space-y-3">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-white"
-                  style={{ border: `1.5px solid ${n.urgent ? C.ink : "#EDE9FF"}` }}>
+                  style={{ border: `1.5px solid ${n.urgent ? C.ink : SOLMOVE.gray}` }}>
                   {n.urgent ? <XCircle size={18} color={C.ink} /> : <Bell size={18} color={C.muted} />}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -1179,7 +1167,7 @@ function AlertsScreen({ go }: { go: (s: Screen) => void }) {
                 <p className="flex-1 text-sm font-semibold truncate" style={{ color: C.ink }}>{s.name}</p>
                 <button onClick={() => toggle(s.id)} role="switch" aria-checked={on}
                   className="w-11 h-6 rounded-full flex items-center px-0.5 transition-colors"
-                  style={{ background: on ? C.accent : "#EDE9FF" }}>
+                  style={{ background: on ? C.accent : SOLMOVE.gray }}>
                   <div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${on ? "translate-x-5" : ""}`} />
                 </button>
               </div>
@@ -1201,14 +1189,14 @@ export default function App() {
 
   // Preload all images immediately so they're ready before the user navigates
   useEffect(() => {
-    [heroImg, trainImg, logoIcon].forEach(src => {
+    [heroImg, trainImg, solmoveLogo].forEach(src => {
       const img = new window.Image();
       img.src = src as string;
     });
   }, []);
 
   return (
-    <div className="flex items-start justify-center min-h-screen" style={{ background: "#DDD8FF", fontFamily: "'Onest', sans-serif" }}>
+    <div className="flex items-start justify-center min-h-screen" style={{ background: SOLMOVE.gray, fontFamily: "'Onest', sans-serif" }}>
       <div className="relative overflow-hidden" style={{ width: "100%", maxWidth: 440, height: "100svh", display: "flex", flexDirection: "column", background: C.bg }}>
         {screen === "onboarding1"    && <OB1 next={() => setScreen("onboarding2")} />}
         {screen === "onboarding2"    && <OB2 next={() => setScreen("onboarding3")} back={() => setScreen("onboarding1")} />}

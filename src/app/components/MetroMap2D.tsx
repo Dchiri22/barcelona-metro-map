@@ -3,6 +3,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { MetroMap3D, DEFAULT_MAP_LAYERS, type MapLayers } from "@/app/components/MetroMap3D";
 import type { Station } from "@/app/data/metro";
+import { SOLMOVE } from "@/app/theme/solmove";
 
 export interface MetroMap2DHandle {
   zoomIn: () => void;
@@ -14,16 +15,16 @@ function MapLegends() {
   return (
     <>
       <div className="absolute left-2 bottom-2 rounded-xl bg-white/95 border px-2.5 py-2 shadow-sm pointer-events-none z-10"
-        style={{ borderColor: "#EDE9FF", fontFamily: "'Onest', sans-serif" }}>
-        {[["#5B4FCF", "Working"], ["#A78BFA", "Maintenance"], ["#0F0D1A", "Closed"]].map(([c, l]) => (
+        style={{ borderColor: SOLMOVE.gray, fontFamily: "'Onest', sans-serif" }}>
+        {[[SOLMOVE.path, "Working"], [SOLMOVE.sun, "Maintenance"], [SOLMOVE.ink, "Closed"]].map(([c, l]) => (
           <div key={l} className="flex items-center gap-1.5 mb-1 last:mb-0">
             <span className="w-2 h-2 rounded-full border-2" style={{ borderColor: c }} />
-            <span className="text-[9px]" style={{ color: "#7C7A8E" }}>{l}</span>
+            <span className="text-[9px]" style={{ color: SOLMOVE.muted }}>{l}</span>
           </div>
         ))}
       </div>
       <div className="absolute right-2 bottom-2 rounded-xl bg-white/95 border px-2.5 py-2 shadow-sm pointer-events-none z-10 max-w-[148px]"
-        style={{ borderColor: "#EDE9FF", fontFamily: "'Onest', sans-serif" }}>
+        style={{ borderColor: SOLMOVE.gray, fontFamily: "'Onest', sans-serif" }}>
         {[
           ["#E3051B", "L1 — Fondo / H. Bellvitge"],
           ["#9B2D9E", "L2 — Badalona / Paral·lel"],
@@ -33,7 +34,7 @@ function MapLegends() {
         ].map(([color, label]) => (
           <div key={label} className="flex items-center gap-1.5 mb-1 last:mb-0">
             <span className="w-4 h-1 rounded-full shrink-0" style={{ background: color }} />
-            <span className="text-[8px] leading-tight" style={{ color: "#7C7A8E" }}>{label}</span>
+            <span className="text-[8px] leading-tight" style={{ color: SOLMOVE.muted }}>{label}</span>
           </div>
         ))}
       </div>

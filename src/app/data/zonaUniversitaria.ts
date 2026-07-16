@@ -92,9 +92,10 @@ const l3Waypoints: Waypoint[] = [
     id: "l3-wait",
     x: -6,
     y: -5,
-    z: 17,
+    z: 17.5,
     label: "Espera L3",
-    narration: "Punt d'espera accessible assolit. El tren L3 arribarà per aquesta vora.",
+    narration:
+      "Has arribat al punt d'espera accessible. El tren de la L3 és a la via — espera darrere la franja de seguretat.",
   },
 ];
 
@@ -147,9 +148,10 @@ const l9sWaypoints: Waypoint[] = [
     id: "l9s-wait",
     x: 11,
     y: -12,
-    z: 17,
+    z: 17.5,
     label: "Espera L9S",
-    narration: "Punt d'espera accessible assolit a la L9 Sud.",
+    narration:
+      "Punt d'espera accessible a la L9 Sud. El tren direcció Aeroport T1 és a l'andana.",
   },
 ];
 
